@@ -6,14 +6,14 @@ import com.unimag.passengerservice.entity.Passenger;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "string")
+@Mapper(componentModel = "spring")
 public interface PassengerMapper {
 
     PassengerResponseDTO toDTO(Passenger passenger);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", constant = "0.0")
-    @Mapping(target = "ratingAvg", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "ratingAvg", constant = "0.0")
     @Mapping(target = "driverProfile", ignore = true)
     Passenger toEntity(CreatePassengerRequestDTO request);
 
