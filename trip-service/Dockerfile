@@ -10,7 +10,7 @@ WORKDIR /app
 
 COPY target/*.jar app.jar
 
-EXPOSE 8084
+EXPOSE 8085
 
 ENV JAVA_OPTS=""
 
