@@ -2,6 +2,7 @@ package com.unimag.tripservice.entities;
 
 import com.unimag.tripservice.enums.ReservationStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity(name = "reservation")
 @NoArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class Reservation {
 
     @Id
