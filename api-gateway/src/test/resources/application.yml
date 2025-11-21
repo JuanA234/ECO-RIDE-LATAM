@@ -1,0 +1,23 @@
+
+spring:
+  cloud:
+    gateway:
+      enabled: false
+    discovery:
+      enabled: false
+  main:
+    web-application-type: reactive
+
+  # Excluir autoconfiguraciones problemáticas en tests
+  autoconfigure:
+    exclude:
+      - org.springframework.cloud.gateway.config.GatewayAutoConfiguration
+      - org.springframework.cloud.gateway.config.GatewayRedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
