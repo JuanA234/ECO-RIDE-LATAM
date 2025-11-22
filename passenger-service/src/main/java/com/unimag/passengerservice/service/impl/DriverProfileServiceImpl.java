@@ -13,14 +13,15 @@ import com.unimag.passengerservice.repository.DriverProfileRepository;
 import com.unimag.passengerservice.repository.PassengerRepository;
 import com.unimag.passengerservice.service.DriverProfileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DriverProfileServiceImpl implements DriverProfileService {
 
     private final DriverProfileRepository driverProfileRepository;
@@ -29,13 +30,22 @@ public class DriverProfileServiceImpl implements DriverProfileService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public DriverProfileResponseDTO getById(Long id) {
-        return driverProfileRepository.findById(id).map(driverProfileMapper::toDTO).orElseThrow(() -> new DriverProfileNotFoundException("Driver Profile not found with id: " + id));
+        log.debug("Getting driver profile by id: {}", id);
+        return driverProfileRepository.findById(id)
+                .map(driverProfileMapper::toDTO)
+                .orElseThrow(() -> new DriverProfileNotFoundException("Driver Profile not found with id: " + id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<DriverProfileResponseDTO> getAll() {
-        return driverProfileRepository.findAll().stream().map(driverProfileMapper::toDTO).toList();
+        log.debug("Getting all driver profiles");
+        return driverProfileRepository.findAll()
+                .stream()
+                .map(driverProfileMapper::toDTO)
+                .toList();
     }
 
     @Override
@@ -43,17 +53,27 @@ public class DriverProfileServiceImpl implements DriverProfileService {
     public DriverProfileResponseDTO create(CreateDriverProfileRequestDTO request) {
         DriverProfile driverProfile = driverProfileMapper.toEntity(request);
 
-        Passenger passenger = passengerRepository.findById(request.passengerId()).orElseThrow(() -> new PassengerNotFoundException("Passenger not found with id " + request.passengerId()));
+        Passenger passenger = passengerRepository.findById(request.passengerId())
+                .orElseThrow(() -> new PassengerNotFoundException("Passenger not found with id " + request.passengerId()));
+
+        if (driverProfileRepository.existsByPassengerId(passenger.getId())) {
+            throw new IllegalArgumentException("Driver Profile already exists with passenger id: " + request.passengerId());
+        }
 
         driverProfile.setPassenger(passenger);
         driverProfile.setVerificationStatus(VerificationStatus.PENDING);
 
+        log.info("Driver profile created with id: {} for passenger id: {}", driverProfile.getId(), request.passengerId());
         return driverProfileMapper.toDTO(driverProfileRepository.save(driverProfile));
     }
 
     @Override
+    @Transactional
     public DriverProfileResponseDTO update(Long id, UpdateDriverProfileRequestDTO request) {
-        DriverProfile driverProfile = driverProfileRepository.findById(id).orElseThrow(() -> new DriverProfileNotFoundException("DriverProfile not found with id " + id));
+        log.info("Updating driver profile with id: {}", id);
+
+        DriverProfile driverProfile = driverProfileRepository.findById(id)
+                .orElseThrow(() -> new DriverProfileNotFoundException("DriverProfile not found with id " + id));
 
         if(request.licenseNumber()!=null){
             driverProfile.setLicenseNumber(request.licenseNumber());
@@ -71,12 +91,16 @@ public class DriverProfileServiceImpl implements DriverProfileService {
             driverProfile.setVerificationStatus(request.verificationStatus());
         }
 
-        return driverProfileMapper.toDTO(driverProfileRepository.save(driverProfile));
+        log.info("Driver profile updated successfully with id: {}", id);
+        return driverProfileMapper.toDTO(driverProfileRepository
+                .save(driverProfile));
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
+        log.warn("Deleting driver profile with id: {}", id);
+
         DriverProfile driverProfile = driverProfileRepository.findById(id)
                 .orElseThrow(() -> new DriverProfileNotFoundException("DriverProfile not found with id " + id));
 
@@ -86,6 +110,7 @@ public class DriverProfileServiceImpl implements DriverProfileService {
         }
 
         driverProfileRepository.deleteById(id);
+        log.info("Driver profile deleted successfully with id: {}", id);
     }
 
 //    @Override

@@ -22,7 +22,7 @@ public class DriverProfile {
     @JoinColumn(name = "passenger_id", nullable = false)
     private Passenger passenger;
 
-    @Column(name = "license_no", nullable = false)
+    @Column(name = "license_no", nullable = false, unique = true)
     private String licenseNumber;
 
     @Column(name = "car_plate", nullable = false)

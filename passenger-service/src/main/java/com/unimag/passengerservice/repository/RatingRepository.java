@@ -9,4 +9,6 @@ import java.util.List;
 public interface RatingRepository extends JpaRepository<Rating, Long> {
     @Query("SELECT AVG(r.score) FROM Rating r WHERE r.toId = :id")
     Double findAverageScoreByPassengerId(Long id);
+
+    Boolean existsByTripIdAndFromIdAndToId(Long tripId, Long fromId, Long toId);
 }
