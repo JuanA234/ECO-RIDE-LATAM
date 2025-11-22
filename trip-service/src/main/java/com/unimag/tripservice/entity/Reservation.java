@@ -1,11 +1,10 @@
-package com.unimag.tripservice.entities;
+package com.unimag.tripservice.entity;
 
 import com.unimag.tripservice.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 

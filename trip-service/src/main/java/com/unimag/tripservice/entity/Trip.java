@@ -1,8 +1,9 @@
-package com.unimag.tripservice.entities;
+package com.unimag.tripservice.entity;
 
 import com.unimag.tripservice.enums.TripStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "trips")
+@Builder
 public class Trip {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
