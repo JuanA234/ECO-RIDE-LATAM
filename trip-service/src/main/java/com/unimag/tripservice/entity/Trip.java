@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "trips")
+@Entity
+@Table(name = "trips")
 @Builder
 public class Trip {
     @Id
@@ -23,7 +25,7 @@ public class Trip {
     private Long id;
 
     @Column(name = "driver_id")
-    private String driverId;
+    private Long driverId;
 
     private String origin;
 
@@ -32,10 +34,10 @@ public class Trip {
     @Column(name = "start_time")
     private LocalDateTime startTime;
     @Column(name = "seats_total")
-    private int seatsTotal;
+    private Integer seatsTotal;
     @Column(name = "seats_available")
-    private int seatsAvailable;
-    private Double price;
+    private Integer seatsAvailable;
+    private BigDecimal price;
     @Enumerated(EnumType.STRING)
     private TripStatus status;
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
