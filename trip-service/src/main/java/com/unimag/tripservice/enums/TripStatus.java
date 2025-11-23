@@ -1,8 +1,8 @@
 package com.unimag.tripservice.enums;
 
 public enum TripStatus {
-    PLANNED,
+    SCHEDULED,
     IN_PROGRESS,
-    FINISHED,
+    COMPLETED,
     CANCELLED
 }

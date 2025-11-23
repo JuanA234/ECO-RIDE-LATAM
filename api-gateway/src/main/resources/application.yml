@@ -5,6 +5,96 @@ spring:
   application:
     name: api-gateway
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ecoredis123
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          default-filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+          routes:
+            # ============================================
+            # TRIPS SERVICE ROUTES
+            # ============================================
+            - id: trips-list
+              uri: lb://trips-service
+              predicates:
+                - Path=/api/trips
+                - Method=GET
+              filters:
+                - StripPrefix=1
+                - name: CircuitBreaker
+                  args:
+                    name: tripsCircuitBreaker
+                    fallbackUri: forward:/fallback/trips
+            - id: trips-create
+              uri: lb://trips-service
+              predicates:
+                - Path=/api/trips
+                - Method=POST
+              filters:
+                - StripPrefix=1
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
+                    redis-rate-limiter.requestedTokens: 1
+
+            - id: trips-by-id
+              uri: lb://trips-service
+              predicates:
+                - Path=/api/trips/{id}
+                - Method=GET,PUT,DELETE
+              filters:
+                - StripPrefix=1
+                - RewritePath=/api/trips/(?<segment>.*), /trips/$\{segment}
+
+
+            - id: payments-history
+              uri: lb://payments-service
+              predicates:
+                - Path=/api/payments/history
+                - Method=GET
+                - Query=userId, \d+
+              filters:
+                - StripPrefix=1
+
+            # ============================================
+            # NOTIFICATIONS SERVICE ROUTES
+            # ============================================
+            - id: notifications-send
+              uri: lb://notifications-service
+              predicates:
+                - Path=/api/notifications/send
+                - Method=POST
+              filters:
+                - StripPrefix=1
+                - AddResponseHeader=X-Response-Time, ${requestTime}
+
+            - id: notifications-webhook
+              uri: lb://notifications-service
+              predicates:
+                - Path=/api/notifications/webhook/**
+                - Method=POST
+                - Header=X-Webhook-Secret
+              filters:
+                - StripPrefix=1
+                - PreserveHostHeader
+
+
     # ============================================
     # SECURITY CONFIGURATION
     # ============================================
@@ -53,3 +143,43 @@ spring:
         jwt:
           issuer-uri: http://localhost:8180/realms/eco-ride-dev
           jwk-set-uri: http://localhost:8180/realms/eco-ride-dev/protocol/openid-connect/certs
+
+
+# ============================================
+# EUREKA DISCOVERY
+# ============================================
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+# ============================================
+# ACTUATOR & MONITORING
+# ============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,metrics,prometheus
+  endpoint:
+    gateway:
+      access:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+# ============================================
+# LOGGING
+# ============================================
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web.reactive.function.client: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
