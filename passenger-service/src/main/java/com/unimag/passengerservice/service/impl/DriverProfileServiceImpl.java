@@ -30,7 +30,6 @@ public class DriverProfileServiceImpl implements DriverProfileService {
 
 
     @Override
-    @Transactional(readOnly = true)
     public DriverProfileResponseDTO getById(Long id) {
         log.debug("Getting driver profile by id: {}", id);
         return driverProfileRepository.findById(id)
@@ -39,7 +38,6 @@ public class DriverProfileServiceImpl implements DriverProfileService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<DriverProfileResponseDTO> getAll() {
         log.debug("Getting all driver profiles");
         return driverProfileRepository.findAll()

@@ -27,7 +27,6 @@ public class RatingServiceImpl implements RatingService {
     private final RatingMapper ratingMapper;
 
     @Override
-    @Transactional(readOnly = true)
     public RatingResponseDTO getById(Long id) {
         log.debug("Get rating by id: {}", id);
 
@@ -37,7 +36,6 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<RatingResponseDTO> getAll() {
         log.debug("Get all ratings");
 

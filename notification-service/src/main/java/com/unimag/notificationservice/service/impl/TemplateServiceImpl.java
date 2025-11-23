@@ -24,7 +24,6 @@ public class TemplateServiceImpl implements TemplateService {
     TemplateMapper templateMapper;
 
     @Override
-    @Transactional(readOnly = true)
     public TemplateResponseDTO getById(Long id) {
         log.debug("Getting template by id: {}", id);
         return templateRepository.findById(id)
@@ -33,7 +32,6 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<TemplateResponseDTO> getAll() {
         log.debug("Getting all templates");
         return templateRepository.findAll()
@@ -43,7 +41,6 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    @Transactional
     public TemplateResponseDTO create(CreateTemplateRequestDTO request) {
         log.debug("Creating template: {}", request);
         return templateMapper.toDTO(templateRepository.save(templateMapper.toEntity(request)));

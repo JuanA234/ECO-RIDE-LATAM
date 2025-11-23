@@ -24,7 +24,6 @@ public class PassengerServiceImpl implements PassengerService {
     private final PassengerMapper passengerMapper;
 
     @Override
-    @Transactional(readOnly = true)
     public PassengerResponseDTO getById(Long id) {
         log.debug("Getting passenger by id: {}", id);
 
@@ -34,7 +33,6 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<PassengerResponseDTO> getAll() {
         log.debug("Getting all passengers");
 

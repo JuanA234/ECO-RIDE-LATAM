@@ -24,7 +24,6 @@ public class OutboxServiceImpl implements OutboxService {
     OutboxMapper outboxMapper;
 
     @Override
-    @Transactional(readOnly = true)
     public OutboxResponseDTO getById(Long id) {
         log.debug("Retrieving outbox entry with id: {}", id);
         return outboxRepository.findById(id)
@@ -33,7 +32,6 @@ public class OutboxServiceImpl implements OutboxService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<OutboxResponseDTO> getAll() {
         log.debug("Retrieving all outboxes entries");
         return outboxRepository.findAll()
