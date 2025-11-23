@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/payment-service/src/main/resources/db/migration/V1__Create_payment_intent_table.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/payment-service/src/main/resources/db/migration/V2__Create_charge_table.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/payment-service/src/main/resources/db/migration/V3__Create_refund_table.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/trip-service/src/main/java/com/unimag/tripservice/repositories/TripRepository.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/trip-service/src/main/resources/db/migration/V1__Create_trip_table.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/trip-service/src/main/resources/db/migration/V2__Create_reservation_table.sql" dialect="PostgreSQL" />
   </component>
