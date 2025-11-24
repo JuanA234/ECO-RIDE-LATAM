@@ -14,4 +14,6 @@ public interface TripMapper {
     ResponseTrip toResponseTrip(Trip trip);
 
     Trip toTrip(CreateTrip createTrip);
+
+
 }

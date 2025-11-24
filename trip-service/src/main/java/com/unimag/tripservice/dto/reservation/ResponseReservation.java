@@ -4,5 +4,6 @@ import com.unimag.tripservice.enums.ReservationStatus;
 
 import java.time.LocalDateTime;
 
-public record ResponseReservation(Long tripId, Long passengerId, ReservationStatus status, LocalDateTime createdAt) {
+public record ResponseReservation(Long id,
+        Long tripId, Long passengerId, ReservationStatus status, LocalDateTime createdAt) {
 }

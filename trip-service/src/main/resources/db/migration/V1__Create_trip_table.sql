@@ -1,4 +1,4 @@
-CREATE TABLE trip (
+CREATE TABLE trips (
   id BIGSERIAL PRIMARY KEY,
   driver_id BIGINT NOT NULL,
   origin VARCHAR(255) NOT NULL,
@@ -14,10 +14,10 @@ CREATE TABLE trip (
   CONSTRAINT chk_seats_capacity CHECK (seats_available <= seats_total)
 );
 
-CREATE INDEX idx_trip_status ON trip(status);
-CREATE INDEX idx_trip_driver ON trip(driver_id);
-CREATE INDEX idx_trip_route ON trip(origin, destination, start_time);
-CREATE INDEX idx_trip_start_time ON trip(start_time) WHERE status = 'SCHEDULED';
+CREATE INDEX idx_trip_status ON trips(status);
+CREATE INDEX idx_trip_driver ON trips(driver_id);
+CREATE INDEX idx_trip_route ON trips(origin, destination, start_time);
+CREATE INDEX idx_trip_start_time ON trips(start_time) WHERE status = 'SCHEDULED';
 
-COMMENT ON TABLE trip IS 'Stores trip information for rideshare service';
-COMMENT ON COLUMN trip.status IS 'Valid values: SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED';
+COMMENT ON TABLE trips IS 'Stores trip information for rideshare service';
+COMMENT ON COLUMN trips.status IS 'Valid values: SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED';

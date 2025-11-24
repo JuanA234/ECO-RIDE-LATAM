@@ -19,18 +19,18 @@ public interface TripRepository extends R2dbcRepository<Trip, Long> {
     Flux<Trip> findByDriverId(Long driverId);
 
 
-    @Query("SELECT * FROM trip WHERE origin = :origin AND destination = :destination " +
+    @Query("SELECT * FROM trips WHERE origin = :origin AND destination = :destination " +
             "AND start_time >= :startTime AND status = 'SCHEDULED' " +
             "AND seats_available > 0 ORDER BY start_time")
     Flux<Trip> findAvailableTrips(@Param("origin") String origin,
                                   @Param("destination") String destination,
                                   @Param("startTime") LocalDateTime startTime);
 
-    @Query("UPDATE trip SET seats_available = seats_available - 1, updated_at = NOW() " +
+    @Query("UPDATE trips SET seats_available = seats_available - 1, updated_at = NOW() " +
             "WHERE id = :tripId AND seats_available > 0")
     Mono<Integer> decrementAvailableSeats(@Param("tripId") Long tripId);
 
-    @Query("UPDATE trip SET seats_available = seats_available + 1, updated_at = NOW() " +
+    @Query("UPDATE trips SET seats_available = seats_available + 1, updated_at = NOW() " +
             "WHERE id = :tripId")
     Mono<Integer> incrementAvailableSeats(@Param("tripId") Long tripId);
 }

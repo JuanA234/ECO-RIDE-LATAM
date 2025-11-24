@@ -10,14 +10,11 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "spring")
 public interface ReservationMapper {
 
-    @Mappings({
-            @Mapping(source = "trip.id", target = "tripId")
-    })
+
     ResponseReservation toResponseReservation(Reservation reservation);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(source = "tripId", target = "trip.id")
     })
     Reservation toReservation(CreateReservation createReservation);
 }

@@ -26,6 +26,31 @@ spring:
     clean-disabled: true
 
 
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:29092
+      bindings:
+        # Outbound channels
+        paymentAuthorized-out-0:
+          destination: payment-authorized
+          content-type: application/json
+        paymentFailed-out-0:
+          destination: payment-failed
+          content-type: application/json
+        # Inbound channels
+        reservationRequested-in-0:
+          destination: reservation-requested
+          content-type: application/json
+          group: payment-service-group
+        reservationCancelled-in-0:
+          destination: reservation-cancelled
+          content-type: application/json
+          group: payment-service-group
+      function:
+        definition: reservationRequested;reservationCancelled
+
 server:
   port: 8083
 

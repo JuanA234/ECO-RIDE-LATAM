@@ -1,4 +1,4 @@
-package com.unimag.tripservice.dto.event;
+package com.unimag.paymentservice.dto.event;
 
 import lombok.Builder;
 

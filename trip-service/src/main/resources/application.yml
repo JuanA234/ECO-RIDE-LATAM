@@ -27,6 +27,36 @@ spring:
     clean-disabled: true
 
 
+
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:29092
+      bindings:
+        # Outbound channels
+        reservationRequested-out-0:
+          destination: reservation-requested
+          content-type: application/json
+        reservationConfirmed-out-0:
+          destination: reservation-confirmed
+          content-type: application/json
+        reservationCancelled-out-0:
+          destination: reservation-cancelled
+          content-type: application/json
+        # Inbound channels
+        paymentAuthorized-in-0:
+          destination: payment-authorized
+          content-type: application/json
+          group: trip-service-group
+        paymentFailed-in-0:
+          destination: payment-failed
+          content-type: application/json
+          group: trip-service-group
+      function:
+        definition: paymentAuthorized;paymentFailed
+
+
 server:
   port: 8085
 
