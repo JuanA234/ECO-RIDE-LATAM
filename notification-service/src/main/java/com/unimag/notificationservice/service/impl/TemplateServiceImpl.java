@@ -3,7 +3,6 @@ package com.unimag.notificationservice.service.impl;
 import com.unimag.notificationservice.dto.request.CreateTemplateRequestDTO;
 import com.unimag.notificationservice.dto.response.TemplateResponseDTO;
 import com.unimag.notificationservice.dto.request.UpdateTemplateRequestDTO;
-import com.unimag.notificationservice.entity.Template;
 import com.unimag.notificationservice.exception.notfound.TemplateNotFoundException;
 import com.unimag.notificationservice.mapper.TemplateMapper;
 import com.unimag.notificationservice.repository.TemplateRepository;
@@ -12,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -24,62 +23,64 @@ public class TemplateServiceImpl implements TemplateService {
     TemplateMapper templateMapper;
 
     @Override
-    public TemplateResponseDTO getById(Long id) {
+    public Mono<TemplateResponseDTO> getById(Long id) {
         log.debug("Getting template by id: {}", id);
+
         return templateRepository.findById(id)
-                .map(templateMapper::toDTO)
-                .orElseThrow(() -> new TemplateNotFoundException("template not found with id: " + id));
+                .switchIfEmpty(Mono.error(new TemplateNotFoundException("template not found with id: " + id)))
+                .map(templateMapper::toDTO);
     }
 
     @Override
-    public List<TemplateResponseDTO> getAll() {
+    public Flux<TemplateResponseDTO> getAll() {
         log.debug("Getting all templates");
         return templateRepository.findAll()
-                .stream()
-                .map(templateMapper::toDTO)
-                .toList();
+                .map(templateMapper::toDTO);
     }
 
     @Override
-    public TemplateResponseDTO create(CreateTemplateRequestDTO request) {
+    public Mono<TemplateResponseDTO> create(CreateTemplateRequestDTO request) {
         log.debug("Creating template: {}", request);
-        return templateMapper.toDTO(templateRepository.save(templateMapper.toEntity(request)));
+
+        return Mono.just(request)
+                .map(templateMapper::toEntity)
+                .flatMap(templateRepository::save)
+                .map(templateMapper::toDTO);
     }
 
     @Override
     @Transactional
-    public TemplateResponseDTO update(Long id, UpdateTemplateRequestDTO request) {
+    public Mono<TemplateResponseDTO> update(Long id, UpdateTemplateRequestDTO request) {
         log.info("Updating template with id: {}", id);
-        Template template = templateRepository.findById(id)
-                .orElseThrow(() -> new TemplateNotFoundException("template not found with id: " + id));
 
-        if(request.code()!=null) {
-            template.setCode(request.code());
-        }
-
-        if(request.channel()!=null) {
-            template.setChannel(request.channel());
-        }
-
-        if(request.subject()!=null) {
-            template.setSubject(request.subject());
-        }
-
-        if(request.body()!=null) {
-            template.setBody(request.body());
-        }
-
-        return templateMapper.toDTO(templateRepository.save(template));
+        return templateRepository.findById(id)
+                .switchIfEmpty(Mono.error(
+                        new TemplateNotFoundException("template not found with id: " + id)
+                ))
+                .map(template -> {
+                    if(request.code() != null) template.setCode(request.code());
+                    if(request.channel() != null) template.setChannel(request.channel());
+                    if(request.subject() != null) template.setSubject(request.subject());
+                    if(request.body() != null) template.setBody(request.body());
+                    return template;
+                })
+                .flatMap(templateRepository::save)
+                .map(templateMapper::toDTO);
     }
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public Mono<Void> delete(Long id) {
         log.info("Deleting template with id: {}", id);
-        if(!templateRepository.existsById(id)) {
-            throw new TemplateNotFoundException("template not found with id: " + id);
-        }
 
-        templateRepository.deleteById(id);
+        return templateRepository.existsById(id)
+                .flatMap(exists -> {
+                    if (!exists) {
+                        return Mono.error(
+                                new TemplateNotFoundException("template not found with id: " + id)
+                        );
+                    }
+                    return templateRepository.deleteById(id);
+                });
     }
 }

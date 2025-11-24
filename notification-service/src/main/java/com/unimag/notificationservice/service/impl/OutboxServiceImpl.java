@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -24,52 +26,58 @@ public class OutboxServiceImpl implements OutboxService {
     OutboxMapper outboxMapper;
 
     @Override
-    public OutboxResponseDTO getById(Long id) {
+    public Mono<OutboxResponseDTO> getById(Long id) {
         log.debug("Retrieving outbox entry with id: {}", id);
         return outboxRepository.findById(id)
-                .map(outboxMapper::toDTO)
-                .orElseThrow(() -> new OutboxNotFoundException("Notification not found with id: " + id));
+                .switchIfEmpty(Mono.error(new OutboxNotFoundException("outbox entry not found with id: " + id)))
+                .map(outboxMapper::toDTO);
     }
 
     @Override
-    public List<OutboxResponseDTO> getAll() {
+    public Flux<OutboxResponseDTO> getAll() {
         log.debug("Retrieving all outboxes entries");
         return outboxRepository.findAll()
-                .stream()
-                .map(outboxMapper::toDTO)
-                .toList();
+                .map(outboxMapper::toDTO);
     }
 
     @Override
     @Transactional
-    public OutboxResponseDTO retry(Long id) {
+    public Mono<OutboxResponseDTO> retry(Long id) {
         log.info("Retrying Outbox entry with id: {}", id);
 
-        Outbox outbox = outboxRepository.findById(id)
-                .orElseThrow(() -> new OutboxNotFoundException("Outbox entry not found with id: " + id));
+        return outboxRepository.findById(id)
+                .switchIfEmpty(Mono.error(
+                        new OutboxNotFoundException("Outbox entry not found with id: " + id)
+                ))
+                .flatMap(outbox -> {
+                    if (outbox.getStatus() == OutboxStatus.SENT) {
+                        return Mono.error(
+                                new NotificationException("Cannot retry a notification that was already sent")
+                        );
+                    }
 
-        if (outbox.getStatus() == OutboxStatus.SENT) {
-            throw new NotificationException("Cannot retry a notification that was already sent");
-        }
+                    outbox.setStatus(OutboxStatus.PENDING);
+                    outbox.setRetries(outbox.getRetries() + 1);
 
-        outbox.setStatus(OutboxStatus.PENDING);
-        outbox.setRetries(outbox.getRetries() + 1);
-
-        Outbox updated = outboxRepository.save(outbox);
-
-        log.info("Outbox entry marked for retry");
-
-        return outboxMapper.toDTO(updated);
+                    return outboxRepository.save(outbox);
+                })
+                .doOnSuccess(updated -> log.info("Outbox entry marked for retry"))
+                .map(outboxMapper::toDTO);
     }
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public Mono<Void> delete(Long id) {
         log.info("Deleting outbox entry with id: {}", id);
-        if(!outboxRepository.existsById(id)) {
-            throw new OutboxNotFoundException("Outbox entry not found with id: " + id);
-        }
 
-        outboxRepository.deleteById(id);
+        return outboxRepository.existsById(id)
+                .flatMap(exists -> {
+                    if (!exists) {
+                        return Mono.error(
+                                new OutboxNotFoundException("Outbox entry not found with id: " + id)
+                        );
+                    }
+                    return outboxRepository.deleteById(id);
+                });
     }
 }

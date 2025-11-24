@@ -1,10 +1,9 @@
 package com.unimag.notificationservice.repository;
 
 import com.unimag.notificationservice.entity.Template;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Mono;
 
-import java.util.Optional;
-
-public interface TemplateRepository extends JpaRepository<Template, Long> {
-    Optional<Template> findByCode(String code);
+public interface TemplateRepository extends ReactiveCrudRepository<Template, Long> {
+    Mono<Template> findByCode(String code);
 }
