@@ -7,8 +7,6 @@
     <packaging>pom</packaging>
     <name>Archetype - ECO-RIDE-LATAM</name>
   <url>http://maven.apache.org</url>
-    <modules>
-        <module>observability</module>
-    </modules>
+
 
 </project>
