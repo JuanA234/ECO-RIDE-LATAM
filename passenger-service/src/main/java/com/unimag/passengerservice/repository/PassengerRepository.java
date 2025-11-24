@@ -1,11 +1,9 @@
 package com.unimag.passengerservice.repository;
 
 import com.unimag.passengerservice.entity.Passenger;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Mono;
 
-import java.util.Optional;
-
-public interface PassengerRepository extends JpaRepository<Passenger, Long> {
-    //Optional<Passenger> findByKeycloak_sub(String keycloak_sub); //idk
-    Boolean existsByEmail(String email);
+public interface PassengerRepository extends ReactiveCrudRepository<Passenger, Long> {
+    Mono<Boolean> existsByEmail(String email);
 }

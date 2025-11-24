@@ -4,6 +4,7 @@ import com.unimag.passengerservice.dto.request.CreateRatingRequestDTO;
 import com.unimag.passengerservice.dto.response.RatingResponseDTO;
 import com.unimag.passengerservice.entity.Passenger;
 import com.unimag.passengerservice.entity.Rating;
+import com.unimag.passengerservice.exception.alreadyexists.TripWithRatingAlreadyExistsException;
 import com.unimag.passengerservice.exception.notfound.PassengerNotFoundException;
 import com.unimag.passengerservice.exception.notfound.RatingNotFoundException;
 import com.unimag.passengerservice.mapper.RatingMapper;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -27,62 +30,67 @@ public class RatingServiceImpl implements RatingService {
     private final RatingMapper ratingMapper;
 
     @Override
-    public RatingResponseDTO getById(Long id) {
+    public Mono<RatingResponseDTO> getById(Long id) {
         log.debug("Get rating by id: {}", id);
 
         return ratingRepository.findById(id)
-                .map(ratingMapper::toDto)
-                .orElseThrow(() -> new RatingNotFoundException("Rating not found with id: " + id));
+                .switchIfEmpty(Mono.error(new RatingNotFoundException("Rating not found with id: " + id)))
+                .map(ratingMapper::toDto);
     }
 
     @Override
-    public List<RatingResponseDTO> getAll() {
+    public Flux<RatingResponseDTO> getAll() {
         log.debug("Get all ratings");
 
         return ratingRepository.findAll()
-                .stream()
-                .map(ratingMapper::toDto)
-                .toList();
+                .map(ratingMapper::toDto);
     }
 
     @Override
     @Transactional
-    public RatingResponseDTO create(CreateRatingRequestDTO request) {
+    public Mono<RatingResponseDTO> create(CreateRatingRequestDTO request) {
         log.info("Creating rating from passenger {} to passenger {} for trip {}",
                 request.fromId(), request.toId(), request.tripId());
 
         if (request.fromId().equals(request.toId())) {
-            log.warn("Passenger {} attempted to rate themselves", request.fromId());
-            throw new IllegalArgumentException("Cannot rate yourself");
+            return Mono.error(new IllegalArgumentException("Cannot rate yourself"));
         }
 
-        if (!passengerRepository.existsById(request.fromId())) {
-            log.error("From passenger not found with ID: {}", request.fromId());
-            throw new PassengerNotFoundException("From passenger not found");
-        }
+        return passengerRepository.existsById(request.fromId())
+                .flatMap(existsFrom -> {
+                    if (!existsFrom) {
+                        return Mono.error(new PassengerNotFoundException("From passenger not found"));
+                    }
+                    return passengerRepository.existsById(request.toId());
+                })
+                .flatMap(existsTo -> {
+                    if (!existsTo) {
+                        return Mono.error(new PassengerNotFoundException("To passenger not found"));
+                    }
+                    return ratingRepository.existsByTripIdAndFromIdAndToId(
+                            request.tripId(), request.fromId(), request.toId());
+                })
+                .flatMap(existsRating -> {
+                    if (existsRating) {
+                        return Mono.error(new TripWithRatingAlreadyExistsException("Rating already exists"));
+                    }
 
-        if (!passengerRepository.existsById(request.toId())) {
-            log.error("To passenger not found with ID: {}", request.toId());
-            throw new PassengerNotFoundException("To passenger not found");
-        }
+                    Rating rating = ratingMapper.toEntity(request);
 
-        if (ratingRepository.existsByTripIdAndFromIdAndToId(
-                request.tripId(), request.fromId(), request.toId())) {
-            log.warn("Rating already exists for trip {} from {} to {}",
-                    request.tripId(), request.fromId(), request.toId());
-            throw new IllegalArgumentException("Rating already exists for this trip");
-        }
-
-        Rating ratingCreate = ratingRepository.save(ratingMapper.toEntity(request));
-
-        Passenger passenger = passengerRepository.findById(request.toId())
-                .orElseThrow(() -> new PassengerNotFoundException("Passenger not found with id: " + request.toId()));
-
-        Double ratingAvg = ratingRepository.findAverageScoreByPassengerId(passenger.getId());
-        passenger.setRatingAvg(ratingAvg != null ? ratingAvg : 0.0);
-
-        passengerRepository.save(passenger);
-
-        return ratingMapper.toDto(ratingCreate);
+                    return ratingRepository.save(rating);
+                })
+                .flatMap(rating ->
+                        passengerRepository.findById(request.toId())
+                                .flatMap(passenger ->
+                                        ratingRepository.findAverageScoreByPassengerId(passenger.getId())
+                                                .defaultIfEmpty(0.0)
+                                                .flatMap(avg -> {
+                                                    passenger.setRatingAvg(avg);
+                                                    return passengerRepository.save(passenger);
+                                                })
+                                                .thenReturn(rating)
+                                )
+                )
+                .map(ratingMapper::toDto);
     }
 }

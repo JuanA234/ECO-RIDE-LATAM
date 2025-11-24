@@ -3,13 +3,13 @@ package com.unimag.passengerservice.service;
 import com.unimag.passengerservice.dto.request.CreateDriverProfileRequestDTO;
 import com.unimag.passengerservice.dto.request.UpdateDriverProfileRequestDTO;
 import com.unimag.passengerservice.dto.response.DriverProfileResponseDTO;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface DriverProfileService {
-    DriverProfileResponseDTO getById(Long id);
-    List<DriverProfileResponseDTO> getAll();
-    DriverProfileResponseDTO create(CreateDriverProfileRequestDTO request);
-    DriverProfileResponseDTO update(Long id, UpdateDriverProfileRequestDTO request);
-    void delete(Long id);
+    Mono<DriverProfileResponseDTO> getById(Long id);
+    Flux<DriverProfileResponseDTO> getAll();
+    Mono<DriverProfileResponseDTO> create(CreateDriverProfileRequestDTO request);
+    Mono<DriverProfileResponseDTO> update(Long id, UpdateDriverProfileRequestDTO request);
+    Mono<Void> delete(Long id);
 }
