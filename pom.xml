@@ -4,9 +4,6 @@
   <groupId>com.unimag</groupId>
   <artifactId>ECO-RIDE-LATAM</artifactId>
   <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>Archetype - ECO-RIDE-LATAM</name>
+  <name>Archetype - ECO-RIDE-LATAM</name>
   <url>http://maven.apache.org</url>
-
-
 </project>
