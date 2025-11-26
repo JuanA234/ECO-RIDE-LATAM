@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/payment-service/src/main/resources/db/migration/V1__Create_payment_intent_table.sql" value="c6a679da-d70a-4f7e-a913-da844a763e30" />
+    <file url="file://$PROJECT_DIR$/payment-service/src/main/resources/db/migration/V2__Create_charge_table.sql" value="c6a679da-d70a-4f7e-a913-da844a763e30" />
+    <file url="file://$PROJECT_DIR$/payment-service/src/main/resources/db/migration/V3__Create_refund_table.sql" value="c6a679da-d70a-4f7e-a913-da844a763e30" />
+    <file url="file://$PROJECT_DIR$/trip-service/src/main/resources/db/migration/V1__Create_trip_table.sql" value="1fb527de-35e0-4a5b-b8b3-6efc79f82cc8" />
+    <file url="file://$PROJECT_DIR$/trip-service/src/main/resources/db/migration/V2__Create_reservation_table.sql" value="1fb527de-35e0-4a5b-b8b3-6efc79f82cc8" />
+  </component>
+</project>

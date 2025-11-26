@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: payment-service
+
+  # R2DBC Configuration (Reactive)
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5434/paymentdb
+    username: paymentuser
+    password: paymentpass
+    pool:
+      initial-size: 10
+      max-size: 20
+
+  # Flyway Configuration (Migrations run on JDBC)
+  datasource:
+    url: jdbc:postgresql://localhost:5434/paymentdb
+    username: paymentuser
+    password: paymentpass
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+    clean-disabled: true
+
+
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:29092
+      bindings:
+        # Outbound channels
+        paymentAuthorized-out-0:
+          destination: payment-authorized
+          content-type: application/json
+        paymentFailed-out-0:
+          destination: payment-failed
+          content-type: application/json
+        # Inbound channels
+        reservationRequested-in-0:
+          destination: reservation-requested
+          content-type: application/json
+          group: payment-service-group
+        reservationCancelled-in-0:
+          destination: reservation-cancelled
+          content-type: application/json
+          group: payment-service-group
+      function:
+        definition: reservationRequested;reservationCancelled
+
+server:
+  port: 8083
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,flyway
+  endpoint:
+    health:
+      show-details: always
+    flyway:
+      access: unrestricted
+
+logging:
+  level:
+    com.rideshare: DEBUG
+    org.springframework.cloud.stream: DEBUG
+    org.flywaydb: INFO

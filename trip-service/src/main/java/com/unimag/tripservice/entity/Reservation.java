@@ -19,7 +19,7 @@ public class Reservation {
 
     @Id
     private Long id;
-    private Trip trip;
+    private Long tripId;
     private Long passengerId;
     private ReservationStatus status;
     private LocalDateTime createdAt;

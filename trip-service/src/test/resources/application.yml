@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    function:
+      definition: paymentAuthorized;paymentFailed  # Define las funciones
+    stream:
+      bindings:
+        # Producers
+        reservationRequested-out-0:
+          destination: reservation-requested
+        reservationConfirmed-out-0:
+          destination: reservation-confirmed
+        reservationCancelled-out-0:
+          destination: reservation-cancelled
+
+        # Consumers - IMPORTANTE
+        paymentAuthorized-in-0:
+          destination: payment-authorized
+          group: trip-service-group
+        paymentFailed-in-0:
+          destination: payment-failed
+          group: trip-service-group
