@@ -2,12 +2,13 @@ package com.unimag.passengerservice.repository;
 
 import com.unimag.passengerservice.entity.Rating;
 import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface RatingRepository extends ReactiveCrudRepository<Rating, Long> {
+public interface RatingRepository extends R2dbcRepository<Rating, Long> {
     @Query("SELECT AVG(r.score) FROM ratings r WHERE r.to_id = :id")
     Mono<Double> findAverageScoreByPassengerId(Long id);
 
