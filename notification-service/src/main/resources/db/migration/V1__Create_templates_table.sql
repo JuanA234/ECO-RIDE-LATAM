@@ -3,7 +3,7 @@ CREATE TABLE templates (
     code VARCHAR(100) NOT NULL UNIQUE,
     channel VARCHAR(50) NOT NULL,
     subject VARCHAR(200),
-    body TEXT NOT NULL,
+    body TEXT NOT NULL
 );
 
 ALTER TABLE templates ADD CONSTRAINT chk_templates_channel
