@@ -57,18 +57,25 @@ public class RatingServiceImpl implements RatingService {
         }
 
         return passengerRepository.existsById(request.fromId())
+                .switchIfEmpty(Mono.error(new PassengerNotFoundException("From passenger not found (null response)")))
                 .flatMap(existsFrom -> {
                     if (!existsFrom) {
                         return Mono.error(new PassengerNotFoundException("From passenger not found"));
                     }
-                    return passengerRepository.existsById(request.toId());
+
+                    return passengerRepository.existsById(request.toId())
+                            .switchIfEmpty(Mono.error(new PassengerNotFoundException("To passenger not found (null response)")));
                 })
                 .flatMap(existsTo -> {
                     if (!existsTo) {
                         return Mono.error(new PassengerNotFoundException("To passenger not found"));
                     }
+
                     return ratingRepository.existsByTripIdAndFromIdAndToId(
-                            request.tripId(), request.fromId(), request.toId());
+                            request.tripId(),
+                            request.fromId(),
+                            request.toId()
+                    ).switchIfEmpty(Mono.error(new RuntimeException("Repository returned null Mono")));
                 })
                 .flatMap(existsRating -> {
                     if (existsRating) {
@@ -77,10 +84,13 @@ public class RatingServiceImpl implements RatingService {
 
                     Rating rating = ratingMapper.toEntity(request);
 
-                    return ratingRepository.save(rating);
+                    return ratingRepository.save(rating)
+                            .switchIfEmpty(Mono.error(new RuntimeException("Save returned empty")));
                 })
-                .flatMap(rating ->
+
+                .flatMap(savedRating ->
                         passengerRepository.findById(request.toId())
+                                .switchIfEmpty(Mono.error(new PassengerNotFoundException("To passenger not found after save")))
                                 .flatMap(passenger ->
                                         ratingRepository.findAverageScoreByPassengerId(passenger.getId())
                                                 .defaultIfEmpty(0.0)
@@ -88,7 +98,7 @@ public class RatingServiceImpl implements RatingService {
                                                     passenger.setRatingAvg(avg);
                                                     return passengerRepository.save(passenger);
                                                 })
-                                                .thenReturn(rating)
+                                                .thenReturn(savedRating)
                                 )
                 )
                 .map(ratingMapper::toDto);

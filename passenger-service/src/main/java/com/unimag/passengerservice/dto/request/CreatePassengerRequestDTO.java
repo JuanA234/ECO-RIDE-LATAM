@@ -8,8 +8,5 @@ public record CreatePassengerRequestDTO(@NotBlank(message = "Name is required")
 
                                         @NotBlank(message = "Email is required")
                                         @Email(message = "Email must be valid")
-                                        String email,
-
-                                        @NotBlank(message = "Keycloak subject is required")
-                                        String keycloakSub) {
+                                        String email) {
 }
