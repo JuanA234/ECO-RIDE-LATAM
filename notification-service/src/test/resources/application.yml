@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: notification-service
+
+  # Base de datos en memoria para tests
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # JPA / Hibernate
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+  # Deshabilitar inicialización de datos
+  sql:
+    init:
+      mode: never
+
+server:
+  port: 8081
+
+# ZIPKIN: Tracing
+management:
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+  tracing:
+    sampling:
+      probability: 1.0   # 100% de traces
+
+  # ACTUATOR
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+      base-path: /actuator
+
+  # HEALTH
+  health:
+    circuitbreakers:
+      enabled: true
+
+  # PROMETHEUS
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+  # MÉTRICAS
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: ${spring.application.name}
+      environment: dev
+
+# LOGGING con traceId
+logging:
+  level:
+    root: INFO
+    com.unimag.notificationservice: DEBUG
+    org.hibernate.SQL: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

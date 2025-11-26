@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: passenger-service
+  
+  # H2 Database (en memoria)
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  
+  # JPA/Hibernate
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  
+  # Deshabilitar inicialización de datos
+  sql:
+    init:
+      mode: never
+
+server:
+  port: 8082
+
+# ZIPKIN: Tracing
+management:
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  
+  tracing:
+    sampling:
+      probability: 1.0  # 100% de traces
+  
+  # ACTUATOR: Métricas
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+      base-path: /actuator
+  
+  # HEALTH
+  health:
+    circuitbreakers:
+      enabled: true
+  
+  # PROMETHEUS: Métricas
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  
+  # MÉTRICAS
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: ${spring.application.name}
+      environment: dev
+
+# LOGGING: Logs con traceId
+logging:
+  level:
+    root: INFO
+    com.unimag.passengerservice: DEBUG
+    org.hibernate.SQL: DEBUG  # Para ver queries SQL
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

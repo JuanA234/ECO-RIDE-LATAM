@@ -1,5 +1,5 @@
 global:
-#  scrape_interval: 15s
+  scrape_interval: 15s
   evaluation_interval: 15s
   external_labels:
     cluster: 'ECO-RIDE-LATAM'
@@ -21,24 +21,14 @@ scrape_configs:
           application: 'api-gateway'
           service: 'gateway'
 
-  # Trip Service
-  - job_name: 'trip-service'
+  # Notification Service
+  - job_name: 'notification-service'
     metrics_path: '/actuator/prometheus'
     scrape_interval: 10s
     static_configs:
-      - targets: ['host.docker.internal:8085']
+      - targets: ['host.docker.internal:8081']
         labels:
-          application: 'trip-service'
-          service: 'business'
-
-  # Payment Service
-  - job_name: 'payment-service'
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 10s
-    static_configs:
-      - targets: ['host.docker.internal:8083']
-        labels:
-          application: 'payment-service'
+          application: 'notification-service'
           service: 'business'
 
   # Passenger Service
@@ -51,12 +41,22 @@ scrape_configs:
           application: 'passenger-service'
           service: 'business'
 
-  # Notification Service
-  - job_name: 'notification-service'
+  # Payment Service
+  - job_name: 'payment-service'
     metrics_path: '/actuator/prometheus'
     scrape_interval: 10s
     static_configs:
-      - targets: ['host.docker.internal:8081']
+      - targets: [ 'host.docker.internal:8083' ]
         labels:
-          application: 'notification-service'
+          application: 'payment-service'
+          service: 'business'
+
+  # Trip Service
+  - job_name: 'trip-service'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['host.docker.internal:8085']
+        labels:
+          application: 'trip-service'
           service: 'business'
