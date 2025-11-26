@@ -91,7 +91,7 @@ INSERT INTO templates (code, channel, subject, body) VALUES
         <p>We hope you had a great experience!</p>
         <p>Do not forget to rate your driver.</p>
         <p><em>EcoRide Team</em></p>
-     </body></html>';
+     </body></html>');
 
 -- SMS Template for Reservation Confirmed
 INSERT INTO templates (code, channel, subject, body) VALUES
