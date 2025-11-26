@@ -23,7 +23,8 @@ import java.util.List;
 @Slf4j
 @Tag(name = "Passengers", description = "Passenger management endpoints")
 public class PassengerController {
-    PassengerService passengerService;
+
+    private final PassengerService passengerService;
 
     @GetMapping("/{id}")
     @Operation(summary = "Get passenger by ID")

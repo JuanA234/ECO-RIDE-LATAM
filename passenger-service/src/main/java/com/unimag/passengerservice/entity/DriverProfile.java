@@ -1,5 +1,6 @@
 package com.unimag.passengerservice.entity;
 
+import com.unimag.passengerservice.entity.enums.VerificationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

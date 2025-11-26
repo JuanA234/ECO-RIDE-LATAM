@@ -1,6 +1,6 @@
 package com.unimag.notificationservice.dto.request;
 
-import com.unimag.notificationservice.entity.Channel;
+import com.unimag.notificationservice.entity.enums.Channel;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

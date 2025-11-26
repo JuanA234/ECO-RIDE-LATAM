@@ -5,7 +5,7 @@ import com.unimag.passengerservice.dto.request.UpdateDriverProfileRequestDTO;
 import com.unimag.passengerservice.dto.response.DriverProfileResponseDTO;
 import com.unimag.passengerservice.entity.DriverProfile;
 import com.unimag.passengerservice.entity.Passenger;
-import com.unimag.passengerservice.entity.VerificationStatus;
+import com.unimag.passengerservice.entity.enums.VerificationStatus;
 import com.unimag.passengerservice.exception.alreadyexists.DriverProfileAlreadyExistsException;
 import com.unimag.passengerservice.exception.notfound.DriverProfileNotFoundException;
 import com.unimag.passengerservice.exception.notfound.PassengerNotFoundException;

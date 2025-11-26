@@ -2,6 +2,45 @@ spring:
   application:
     name: notification-service
 
+  cloud:
+    stream:
+      # Kafka binder
+      kafka:
+        binder:
+          brokers: localhost:29092
+
+      # Function bindings
+      function:
+        definition: reservationConfirmed;reservationCancelled;paymentAuthorized;paymentFailed;tripCompleted
+
+      # Input bindings (consumers)
+      bindings:
+        reservationConfirmed-in-0:
+          destination: reservation-confirmed
+          group: notification-service-group
+          content-type: application/json
+
+        reservationCancelled-in-0:
+          destination: reservation-cancelled
+          group: notification-service-group
+          content-type: application/json
+
+        paymentAuthorized-in-0:
+          destination: payment-authorized
+          group: notification-service-group
+          content-type: application/json
+
+        paymentFailed-in-0:
+          destination: payment-failed
+          group: notification-service-group
+          content-type: application/json
+
+        tripCompleted-in-0:
+          destination: trip-completed
+          group: notification-service-group
+          content-type: application/json
+
+
   # R2DBC Configuration (Reactive)
   r2dbc:
     url: r2dbc:postgresql://localhost:5434/notificationdb

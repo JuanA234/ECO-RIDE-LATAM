@@ -65,25 +65,33 @@ INSERT INTO templates (code, channel, subject, body) VALUES
       </body>
       </html>');
 
--- Trip Reminder Template
+-- Trip Completed (Driver)
 INSERT INTO templates (code, channel, subject, body) VALUES
-    ('trip-reminder', 'EMAIL',
-     'Trip Reminder - Tomorrow at {{startTime}}',
-     '<html>
-      <body>
-        <h1>⏰ Trip Reminder</h1>
+('trip-completed-driver', 'EMAIL',
+ 'Trip Completed - Trip #{{tripId}}',
+ '<html><body>
+    <h1>🎉 Trip Completed!</h1>
+    <p>Hi <strong>{{driverName}}</strong>,</p>
+    <p>Your trip <strong>#{{tripId}}</strong> has been completed successfully.</p>
+    <p><strong>Completed at:</strong> {{completedAt}}</p>
+    <hr>
+    <p>Thank you for being part of EcoRide!</p>
+    <p><em>EcoRide Team</em></p>
+ </body></html>');
+
+-- Trip Completed (Passenger)
+INSERT INTO templates (code, channel, subject, body) VALUES
+    ('trip-completed-passenger', 'EMAIL',
+     'Trip Completed - Trip #{{tripId}}',
+     '<html><body>
+        <h1>✅ Trip Completed!</h1>
         <p>Hi <strong>{{passengerName}}</strong>,</p>
-        <p>This is a reminder that your trip is <strong>tomorrow</strong>!</p>
+        <p>Your trip <strong>#{{tripId}}</strong> with driver <strong>{{driverName}}</strong> has been completed.</p>
         <hr>
-        <p><strong>Route:</strong> {{origin}} → {{destination}}</p>
-        <p><strong>Departure:</strong> {{startTime}}</p>
-        <p><strong>Driver:</strong> {{driverName}}</p>
-        <p><strong>Vehicle:</strong> {{carPlate}}</p>
-        <hr>
-        <p>Have a great trip!</p>
+        <p>We hope you had a great experience!</p>
+        <p>Do not forget to rate your driver.</p>
         <p><em>EcoRide Team</em></p>
-      </body>
-      </html>');
+     </body></html>';
 
 -- SMS Template for Reservation Confirmed
 INSERT INTO templates (code, channel, subject, body) VALUES

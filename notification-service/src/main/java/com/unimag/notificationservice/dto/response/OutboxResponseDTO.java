@@ -1,6 +1,6 @@
 package com.unimag.notificationservice.dto.response;
 
-import com.unimag.notificationservice.entity.OutboxStatus;
+import com.unimag.notificationservice.entity.enums.OutboxStatus;
 
 public record OutboxResponseDTO(Long id,
                                 String eventType,

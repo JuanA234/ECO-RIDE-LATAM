@@ -1,8 +1,7 @@
 package com.unimag.notificationservice.service.impl;
 
 import com.unimag.notificationservice.dto.response.OutboxResponseDTO;
-import com.unimag.notificationservice.entity.Outbox;
-import com.unimag.notificationservice.entity.OutboxStatus;
+import com.unimag.notificationservice.entity.enums.OutboxStatus;
 import com.unimag.notificationservice.exception.NotificationException;
 import com.unimag.notificationservice.exception.notfound.OutboxNotFoundException;
 import com.unimag.notificationservice.mapper.OutboxMapper;
@@ -15,15 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class OutboxServiceImpl implements OutboxService {
 
-    OutboxRepository outboxRepository;
-    OutboxMapper outboxMapper;
+    private final OutboxRepository outboxRepository;
+    private final OutboxMapper outboxMapper;
 
     @Override
     public Mono<OutboxResponseDTO> getById(Long id) {

@@ -1,6 +1,6 @@
 package com.unimag.passengerservice.dto.request;
 
-import com.unimag.passengerservice.entity.VerificationStatus;
+import com.unimag.passengerservice.entity.enums.VerificationStatus;
 import jakarta.validation.constraints.Min;
 
 public record UpdateDriverProfileRequestDTO(String licenseNumber,

@@ -1,5 +1,6 @@
 package com.unimag.notificationservice.entity;
 
+import com.unimag.notificationservice.entity.enums.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

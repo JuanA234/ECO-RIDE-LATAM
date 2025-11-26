@@ -23,7 +23,8 @@ import java.util.List;
 @Slf4j
 @Tag(name = "Drivers", description = "DriverProfile management endpoints")
 public class DriverProfileController {
-    DriverProfileService driverProfileService;
+
+    private final DriverProfileService driverProfileService;
 
     @GetMapping("/{id}")
     @Operation(summary = "Get driverProfile by ID")

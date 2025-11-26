@@ -1,4 +1,4 @@
-package com.unimag.notificationservice.entity;
+package com.unimag.notificationservice.entity.enums;
 
 public enum Channel {
     EMAIL,

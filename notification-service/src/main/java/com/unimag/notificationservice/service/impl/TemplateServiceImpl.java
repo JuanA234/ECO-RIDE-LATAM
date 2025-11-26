@@ -19,8 +19,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class TemplateServiceImpl implements TemplateService {
 
-    TemplateRepository templateRepository;
-    TemplateMapper templateMapper;
+    private final TemplateRepository templateRepository;
+    private final TemplateMapper templateMapper;
 
     @Override
     public Mono<TemplateResponseDTO> getById(Long id) {
